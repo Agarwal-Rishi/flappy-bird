@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.sql.Time;
 import java.util.Random;
 import javax.swing.*;
 
@@ -17,6 +18,8 @@ public class Screen extends JPanel implements ActionListener {
      Image scaledTopPipe;
      Image scaledBottomPipe;
      Image scaledFlappyBird;
+     Time pipeAnimation;
+
      
      
     
@@ -33,7 +36,7 @@ public class Screen extends JPanel implements ActionListener {
         randomCoordinatesForBottomPipe = new Random();
         scaledTopPipe = topPipe.getImage().getScaledInstance(40, 250, Image.SCALE_SMOOTH);
         scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, 200, Image.SCALE_SMOOTH);
-        scaledFlappyBird = flappyBird.getImage().getScaledInstance(35, 30, Image.SCALE_SMOOTH);
+        scaledFlappyBird = flappyBird.getImage().getScaledInstance(34, 24, Image.SCALE_SMOOTH);
 
     }
 
@@ -43,6 +46,10 @@ public class Screen extends JPanel implements ActionListener {
     }
 
     //fuctions
+
+    public void animate() {
+        
+    }
 
 
     
@@ -70,8 +77,5 @@ public class Screen extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
     }
 
-    public class spaceButton extends JFrame implements KeyListener{
-        
-        
-    }
+
 }
