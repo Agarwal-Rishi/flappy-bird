@@ -61,15 +61,17 @@ public class Screen extends JPanel implements ActionListener {
             bottomPipeX--;
             topPipeX--;
             if (topPipeX == -40) {
+                System.out.println(topPipeX);
                 topPipeX = 150;
-                topPipe();
+
             }
             if (bottomPipeX == -40) {
+                System.out.println(bottomPipeX);
                 bottomPipeX = 150;
-                bottomPipe();
+
             }
             try {
-                Thread.sleep(10); // sleeps for 10 milliseconds
+                Thread.sleep(100); // sleeps for 100 milliseconds
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // reset the interruption status
                 e.printStackTrace(); // or handle it in some other way
@@ -99,20 +101,10 @@ public class Screen extends JPanel implements ActionListener {
         }
     }
 
-    public void topPipe(Graphics graphics) { //this funtion is made so we can use it as a method in another funtion
-        if (scaledTopPipe != null) {
-            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
-        }
-    }
-
-    public void bottomPipe(Graphics graphics) {
-        if (scaledBottomPipe != null) {
-            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
-        }
-    }
 
     @Override
     public void actionPerformed(ActionEvent event) {
+
     }
 
 
