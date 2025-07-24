@@ -9,6 +9,7 @@ public class Runner {
         frame.pack();
         frame.setVisible(true);
         frame.setResizable(false);
+        screen.animate();
         
     }
 }

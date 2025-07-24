@@ -18,7 +18,11 @@ public class Screen extends JPanel implements ActionListener {
      Image scaledTopPipe;
      Image scaledBottomPipe;
      Image scaledFlappyBird;
-     Time pipeAnimation;
+     int topPipeX;
+     int topPipeY;
+     int bottomPipeX;
+     int bottomPipeY;
+     
 
      
      
@@ -28,6 +32,10 @@ public class Screen extends JPanel implements ActionListener {
     public Screen() {
         //J(everything)
         setFocusable(true);
+        topPipeX = 150;
+        topPipeY = 30;
+        bottomPipeX = 150;
+        bottomPipeY = 390;
         backgroundImage = new ImageIcon("flappybirdbg.png");
         topPipe = new ImageIcon("toppipe.png");
         flappyBird = new ImageIcon("flappybird.png");
@@ -48,7 +56,25 @@ public class Screen extends JPanel implements ActionListener {
     //fuctions
 
     public void animate() {
-        
+        while (true) {
+            //animation code
+            bottomPipeX--;
+            topPipeX--;
+            if (topPipeX == -40) {
+                topPipeX = 150;
+                topPipe();
+            }
+            if (bottomPipeX == -40) {
+                bottomPipeX = 150;
+                bottomPipe();
+            }
+            try {
+                Thread.sleep(10); // sleeps for 10 milliseconds
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // reset the interruption status
+                e.printStackTrace(); // or handle it in some other way
+            }
+        }
     }
 
 
@@ -61,15 +87,27 @@ public class Screen extends JPanel implements ActionListener {
         if (backgroundImage != null) {
             graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
         }
+        
         if(scaledTopPipe != null) {
-            graphics.drawImage(scaledTopPipe, 150, 30, this);
+            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
         }
         if (scaledBottomPipe != null) {
-            graphics.drawImage(scaledBottomPipe, 150, 390, this);
+            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
         }
-        if (flappyBird != null) {
-            
+        if (flappyBird != null) { 
             graphics.drawImage(scaledFlappyBird, 100, 400,this);
+        }
+    }
+
+    public void topPipe(Graphics graphics) { //this funtion is made so we can use it as a method in another funtion
+        if (scaledTopPipe != null) {
+            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
+        }
+    }
+
+    public void bottomPipe(Graphics graphics) {
+        if (scaledBottomPipe != null) {
+            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
         }
     }
 
