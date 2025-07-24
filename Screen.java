@@ -71,7 +71,7 @@ public class Screen extends JPanel implements ActionListener {
 
             }
             try {
-                Thread.sleep(100); // sleeps for 100 milliseconds
+                Thread.sleep(100);// sleeps for 100 milliseconds
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // reset the interruption status
                 e.printStackTrace(); // or handle it in some other way
@@ -92,9 +92,11 @@ public class Screen extends JPanel implements ActionListener {
         
         if(scaledTopPipe != null) {
             graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
+            System.out.println(topPipeX);
         }
         if (scaledBottomPipe != null) {
             graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
+            System.out.println(bottomPipeX);
         }
         if (flappyBird != null) { 
             graphics.drawImage(scaledFlappyBird, 100, 400,this);
