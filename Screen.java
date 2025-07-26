@@ -5,9 +5,11 @@ import java.awt.event.KeyListener;
 import java.sql.Time;
 import java.util.Random;
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 
-public class Screen extends JPanel implements ActionListener {
+public class Screen extends JPanel implements ActionListener, KeyListener {
     //variables
      ImageIcon backgroundImage;
      ImageIcon flappyBird;
@@ -22,6 +24,7 @@ public class Screen extends JPanel implements ActionListener {
      int topPipeY;
      int bottomPipeX;
      int bottomPipeY;
+     int flappyBirdY;
      
 
      
@@ -32,9 +35,10 @@ public class Screen extends JPanel implements ActionListener {
     public Screen() {
         //J(everything)
         setFocusable(true);
-        topPipeX = 150;
+        flappyBirdY = 308; 
+        topPipeX = 320;
         topPipeY = 30;
-        bottomPipeX = 150;
+        bottomPipeX = 320;
         bottomPipeY = 390;
         backgroundImage = new ImageIcon("flappybirdbg.png");
         topPipe = new ImageIcon("toppipe.png");
@@ -54,27 +58,57 @@ public class Screen extends JPanel implements ActionListener {
     }
 
     //fuctions
+    public void keyPressed(KeyEvent event) {
+        if (event.getKeyCode() == 32) {
+            System.out.println("The button is working");
+            this.space();
+        }
+    }
+
+    public void keyReleased(KeyEvent event) {
+        //you don't need this function
+    }
+
+    public void keyTyped(KeyEvent event) {
+        //you don't need this function
+    }
+
+    public void space() {
+         flappyBirdY = flappyBirdY - 12;
+         //System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
+         while (flappyBirdY > 640 ) {
+            //System.out.println("over here");
+            flappyBirdY--;
+            //System.out.println("now here");
+         }
+         //System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
+         
+    }
 
     public void animate() {
         while (true) {
             //animation code
-            bottomPipeX--;
-            topPipeX--;
-            if (topPipeX == -40) {
-                System.out.println(topPipeX);
-                topPipeX = 150;
+            bottomPipeX = bottomPipeX - 3;
+            topPipeX = topPipeX - 3;
+            //System.out.println(String.format("beginning topPipeX : %d", topPipeX));
+            if (topPipeX <= -40) {
+                //System.out.println("over here");
+                topPipeX = 320;
 
             }
-            if (bottomPipeX == -40) {
-                System.out.println(bottomPipeX);
-                bottomPipeX = 150;
+            if (bottomPipeX <= -40) {
+                //System.out.println("now here");
+                bottomPipeX = 320;
 
             }
+            //System.out.println(String.format("end topPipeX : %d" , topPipeX));
+            repaint();
             try {
-                Thread.sleep(100);// sleeps for 100 milliseconds
+                Thread.sleep(50);// sleeps for 50 milliseconds
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // reset the interruption status
                 e.printStackTrace(); // or handle it in some other way
+
             }
         }
     }
@@ -99,7 +133,7 @@ public class Screen extends JPanel implements ActionListener {
             System.out.println(bottomPipeX);
         }
         if (flappyBird != null) { 
-            graphics.drawImage(scaledFlappyBird, 100, 400,this);
+            graphics.drawImage(scaledFlappyBird,100, 308, this);
         }
     }
 
