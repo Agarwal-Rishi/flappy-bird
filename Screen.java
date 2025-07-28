@@ -15,8 +15,6 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     ImageIcon flappyBird;
     ImageIcon topPipe;
     ImageIcon bottomPipe;
-    Random randomCoordinatesForTopPipe;
-    Random randomCoordinatesForBottomPipe;
     Image scaledTopPipe;
     Image scaledBottomPipe;
     Image scaledFlappyBird;
@@ -26,13 +24,23 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int bottomPipeY;
     int flappyBirdY;
     boolean gameStarted;
+    int jumpFrames;
+    int heightTopPipe;
+    int heightBottomPipe;
+    Random randomTopPipe;
+    Random randomBottomPipe;
   
     
     public Screen() {
         //J(everything)
         setFocusable(true);
         addKeyListener(this);
+        randomBottomPipe = new Random();
+        randomTopPipe = new Random();
+        heightBottomPipe = 200;
+        heightTopPipe = 250;
         gameStarted = false;
+        jumpFrames = 0;
         flappyBirdY = 308; 
         topPipeX = 320;
         topPipeY = 30;
@@ -44,8 +52,8 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         bottomPipe = new ImageIcon("bottompipe.png");
         randomCoordinatesForTopPipe = new Random();
         randomCoordinatesForBottomPipe = new Random();
-        scaledTopPipe = topPipe.getImage().getScaledInstance(40, 250, Image.SCALE_SMOOTH);
-        scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, 200, Image.SCALE_SMOOTH);
+        scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
+        scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
         scaledFlappyBird = flappyBird.getImage().getScaledInstance(34, 24, Image.SCALE_SMOOTH);
      
 
@@ -61,6 +69,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent event) {
         //System.out.println("the kay pressed function is running");
         if (event.getKeyCode() == 32) {
+            jumpFrames += 2;
             gameStarted = true;
             //System.out.println("The button is working"); 
             this.space();
@@ -78,14 +87,9 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     }
 
     public void space() {
-        flappyBirdY = flappyBirdY - 50;
-
-
+        //flappyBirdY = flappyBirdY - 50;
         System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
-        
-
-        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
-         
+        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));  
     }
     
     public void animate() {
@@ -97,6 +101,11 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
             if (gameStarted == true) {
                 flappyBirdY += 5;
             }
+            if(jumpFrames > 0) {
+                jumpFrames -= 1;
+                flappyBirdY -= 50;
+            }
+            
 
             //System.out.println(String.format("beginning topPipeX : %d", topPipeX));
             if (topPipeX <= -40) {
