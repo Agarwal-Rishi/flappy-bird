@@ -11,30 +11,28 @@ import java.awt.event.KeyListener;
 
 public class Screen extends JPanel implements ActionListener, KeyListener {
     //variables
-     ImageIcon backgroundImage;
-     ImageIcon flappyBird;
-     ImageIcon topPipe;
-     ImageIcon bottomPipe;
-     Random randomCoordinatesForTopPipe;
-     Random randomCoordinatesForBottomPipe;
-     Image scaledTopPipe;
-     Image scaledBottomPipe;
-     Image scaledFlappyBird;
-     int topPipeX;
-     int topPipeY;
-     int bottomPipeX;
-     int bottomPipeY;
-     int flappyBirdY;
-     
-
-     
-     
-    
-    
+    ImageIcon backgroundImage;
+    ImageIcon flappyBird;
+    ImageIcon topPipe;
+    ImageIcon bottomPipe;
+    Random randomCoordinatesForTopPipe;
+    Random randomCoordinatesForBottomPipe;
+    Image scaledTopPipe;
+    Image scaledBottomPipe;
+    Image scaledFlappyBird;
+    int topPipeX;
+    int topPipeY;
+    int bottomPipeX;
+    int bottomPipeY;
+    int flappyBirdY;
+    boolean gameStarted;
+  
     
     public Screen() {
         //J(everything)
         setFocusable(true);
+        addKeyListener(this);
+        gameStarted = false;
         flappyBirdY = 308; 
         topPipeX = 320;
         topPipeY = 30;
@@ -49,6 +47,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         scaledTopPipe = topPipe.getImage().getScaledInstance(40, 250, Image.SCALE_SMOOTH);
         scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, 200, Image.SCALE_SMOOTH);
         scaledFlappyBird = flappyBird.getImage().getScaledInstance(34, 24, Image.SCALE_SMOOTH);
+     
 
     }
 
@@ -58,51 +57,60 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     }
 
     //fuctions
+    @Override
     public void keyPressed(KeyEvent event) {
+        //System.out.println("the kay pressed function is running");
         if (event.getKeyCode() == 32) {
-            System.out.println("The button is working");
+            gameStarted = true;
+            //System.out.println("The button is working"); 
             this.space();
         }
     }
 
+    @Override
     public void keyReleased(KeyEvent event) {
         //you don't need this function
     }
 
+    @Override
     public void keyTyped(KeyEvent event) {
         //you don't need this function
     }
 
     public void space() {
-         flappyBirdY = flappyBirdY - 12;
-         //System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
-         while (flappyBirdY > 640 ) {
-            //System.out.println("over here");
-            flappyBirdY--;
-            //System.out.println("now here");
-         }
-         //System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
+        flappyBirdY = flappyBirdY - 50;
+
+
+        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
+        
+
+        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
          
     }
-
+    
     public void animate() {
         while (true) {
             //animation code
-            bottomPipeX = bottomPipeX - 3;
-            topPipeX = topPipeX - 3;
+            bottomPipeX = bottomPipeX - 6;
+            topPipeX = topPipeX - 6;
+
+            if (gameStarted == true) {
+                flappyBirdY += 5;
+            }
+
             //System.out.println(String.format("beginning topPipeX : %d", topPipeX));
             if (topPipeX <= -40) {
                 //System.out.println("over here");
                 topPipeX = 320;
-
             }
+
             if (bottomPipeX <= -40) {
                 //System.out.println("now here");
                 bottomPipeX = 320;
-
             }
-            //System.out.println(String.format("end topPipeX : %d" , topPipeX));
+
             repaint();
+            //System.out.println(String.format("end topPipeX : %d" , topPipeX));
             try {
                 Thread.sleep(50);// sleeps for 50 milliseconds
             } catch (InterruptedException e) {
@@ -113,10 +121,6 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-
-    
-
-
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -126,14 +130,14 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         
         if(scaledTopPipe != null) {
             graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
-            System.out.println(topPipeX);
+            //System.out.println(topPipeX);
         }
         if (scaledBottomPipe != null) {
             graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
-            System.out.println(bottomPipeX);
+            //System.out.println(bottomPipeX);
         }
         if (flappyBird != null) { 
-            graphics.drawImage(scaledFlappyBird,100, 308, this);
+            graphics.drawImage(scaledFlappyBird,100, flappyBirdY, this);
         }
     }
 
@@ -141,7 +145,6 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     @Override
     public void actionPerformed(ActionEvent event) {
 
+
     }
-
-
 }
