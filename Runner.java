@@ -8,7 +8,6 @@ public class Runner {
         frame.add(screen);
         frame.pack();
         frame.setVisible(true);
-        frame.setResizable(false);
         screen.animate();
         
     }

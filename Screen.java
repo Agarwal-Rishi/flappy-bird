@@ -15,48 +15,77 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     ImageIcon flappyBird;
     ImageIcon topPipe;
     ImageIcon bottomPipe;
+
+    Image scaledFlappyBird;
     Image scaledTopPipe;
     Image scaledBottomPipe;
-    Image scaledFlappyBird;
+
     int topPipeX;
     int topPipeY;
     int bottomPipeX;
     int bottomPipeY;
     int flappyBirdY;
+    
+
+    boolean pipeChecker;
+    int distanceNeededPipeCorrection;
+    int spaceBetweenPipes;
+
     boolean gameStarted;
     int jumpFrames;
     int heightTopPipe;
     int heightBottomPipe;
-    Random randomTopPipe;
+    
+    
     Random randomBottomPipe;
+
+    
+    int minTopY;
+    int maxTopY;
+    int minBottomY;
+    int maxBottomY;
+    int boundsTopPipe;
+    int boundsBottomPipe;
+    int updatedTopValue;
+    int updatedBottomValue;
   
     
     public Screen() {
         //J(everything)
         setFocusable(true);
         addKeyListener(this);
+        
+        minTopY = 75;
+        maxTopY = 515;
+        minBottomY = 75;
+        maxBottomY = 515;
+
         randomBottomPipe = new Random();
-        randomTopPipe = new Random();
+        
         heightBottomPipe = 200;
         heightTopPipe = 250;
+        
         gameStarted = false;
         jumpFrames = 0;
+        pipeChecker = false;
+        distanceNeededPipeCorrection = 0;
+        spaceBetweenPipes = 640 - heightBottomPipe - heightTopPipe;
+
+        
         flappyBirdY = 308; 
         topPipeX = 320;
         topPipeY = 30;
         bottomPipeX = 320;
         bottomPipeY = 390;
+        
         backgroundImage = new ImageIcon("flappybirdbg.png");
         topPipe = new ImageIcon("toppipe.png");
         flappyBird = new ImageIcon("flappybird.png");
         bottomPipe = new ImageIcon("bottompipe.png");
-        randomCoordinatesForTopPipe = new Random();
-        randomCoordinatesForBottomPipe = new Random();
-        scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
-        scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
         scaledFlappyBird = flappyBird.getImage().getScaledInstance(34, 24, Image.SCALE_SMOOTH);
-     
 
+        this.randomCoordinatesY();
+        
     }
 
     @Override
@@ -67,13 +96,126 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     //fuctions
     @Override
     public void keyPressed(KeyEvent event) {
-        //System.out.println("the kay pressed function is running");
         if (event.getKeyCode() == 32) {
             jumpFrames += 2;
             gameStarted = true;
-            //System.out.println("The button is working"); 
             this.space();
+        } 
+        
+    }
+
+    public void pipeOrganizationSmallerThan() {
+        if(spaceBetweenPipes < 150) {
+            pipeChecker = true; 
+            distanceNeededPipeCorrection = 150 - spaceBetweenPipes;
         }
+
+        while (pipeChecker == true) {
+            spaceBetweenPipes = distanceNeededPipeCorrection;
+        }
+    }
+  
+
+    public void randomCoordinatesY() {
+        boundsBottomPipe = maxBottomY - minBottomY;
+        updatedBottomValue = minBottomY + randomBottomPipe.nextInt(boundsBottomPipe);
+        // System.out.println(String.format("bbp : %d", updatedBottomValue));
+        // System.out.println(String.format("btp : %d",updatedTopValue));
+        heightBottomPipe = updatedBottomValue;
+        heightTopPipe = 640 - heightBottomPipe - 100;
+        // System.out.println(String.format("heightBottomPipe : %d", heightBottomPipe));
+        // System.out.println(String.format("heightTopPipe : %d", heightTopPipe));
+        System.out.println(String.format("heightTopPipe : %d", heightTopPipe));
+        System.out.println(String.format("heightBottomPipe : %d", heightBottomPipe));
+    }
+    
+    public void animate() {
+        while (true) {
+            //animation code
+
+            // System.out.println(String.format("Bottom: %d, %d", bottomPipeX, bottomPipeY));
+            // System.out.println(String.format("Top: %d, %d", topPipeX, topPipeY));
+
+            
+            bottomPipeX = bottomPipeX - 6;
+            topPipeX = topPipeX - 6;
+            
+
+            if (gameStarted == true) {
+                flappyBirdY += 7;
+            }
+
+            if (jumpFrames > 0) {
+                jumpFrames -= 1;
+                flappyBirdY -= 43;
+            }
+            
+            if (topPipeX <= -40) {
+                this.randomCoordinatesY();
+                topPipeX = 320;
+            }
+
+            if (topPipeY != 0) {
+                topPipeY = 0;
+            }
+            
+
+            if (bottomPipeX <= -40) {
+                bottomPipeX = 320;
+            }
+            bottomPipeY = 640 - heightBottomPipe;
+            
+            this.pipeOrganizationSmallerThan();
+
+            repaint();
+            
+            //System.out.println(String.format("end topPipeX : %d" , topPipeX));
+            try {
+                Thread.sleep(50);// sleeps for 50 milliseconds
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // reset the interruption status
+                e.printStackTrace(); // or handle it in some other way
+
+            }
+            
+        }
+        
+    }
+
+    @Override
+    public void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+        if (backgroundImage != null) {
+            graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+        }
+
+        if(topPipe != null) {
+            Image scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
+            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
+            // graphics.drawImage(topPipe.getImage(), topPipeX, topPipeY, this);
+            //System.out.println(topPipeX);
+        }
+        if (bottomPipe != null) {
+            Image scaledBottomPipe = topPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
+            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
+            //System.out.println(bottomPipeX);
+        }
+        if (scaledFlappyBird != null) { 
+            graphics.drawImage(scaledFlappyBird,100, flappyBirdY, this);
+        }
+    }
+
+    public void space() {
+        //flappyBirdY = flappyBirdY - 50;
+        // System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
+        // System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));  
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent event) {
+
+
     }
 
     @Override
@@ -86,74 +228,4 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         //you don't need this function
     }
 
-    public void space() {
-        //flappyBirdY = flappyBirdY - 50;
-        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
-        System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));  
-    }
-    
-    public void animate() {
-        while (true) {
-            //animation code
-            bottomPipeX = bottomPipeX - 6;
-            topPipeX = topPipeX - 6;
-
-            if (gameStarted == true) {
-                flappyBirdY += 5;
-            }
-            if(jumpFrames > 0) {
-                jumpFrames -= 1;
-                flappyBirdY -= 50;
-            }
-            
-
-            //System.out.println(String.format("beginning topPipeX : %d", topPipeX));
-            if (topPipeX <= -40) {
-                //System.out.println("over here");
-                topPipeX = 320;
-            }
-
-            if (bottomPipeX <= -40) {
-                //System.out.println("now here");
-                bottomPipeX = 320;
-            }
-
-            repaint();
-            //System.out.println(String.format("end topPipeX : %d" , topPipeX));
-            try {
-                Thread.sleep(50);// sleeps for 50 milliseconds
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // reset the interruption status
-                e.printStackTrace(); // or handle it in some other way
-
-            }
-        }
-    }
-
-    @Override
-    public void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
-        if (backgroundImage != null) {
-            graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-        }
-        
-        if(scaledTopPipe != null) {
-            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
-            //System.out.println(topPipeX);
-        }
-        if (scaledBottomPipe != null) {
-            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
-            //System.out.println(bottomPipeX);
-        }
-        if (flappyBird != null) { 
-            graphics.drawImage(scaledFlappyBird,100, flappyBirdY, this);
-        }
-    }
-
-
-    @Override
-    public void actionPerformed(ActionEvent event) {
-
-
-    }
 }
