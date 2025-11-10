@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.random.*;
 
 
 public class Screen extends JPanel implements ActionListener, KeyListener {
@@ -27,17 +28,16 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int flappyBirdY;
     
 
-    boolean pipeChecker;
-    int distanceNeededPipeCorrection;
-    int spaceBetweenPipes;
+    
 
     boolean gameStarted;
     int jumpFrames;
     int heightTopPipe;
     int heightBottomPipe;
-    
-    
-    Random randomBottomPipe;
+
+
+    Random rand;
+    int updatedBottomPipe;
 
     
     int minTopY;
@@ -59,17 +59,16 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         maxTopY = 515;
         minBottomY = 75;
         maxBottomY = 515;
-
-        randomBottomPipe = new Random();
         
         heightBottomPipe = 200;
         heightTopPipe = 250;
+
+        rand = new Random();
+        updatedBottomPipe = 0;
         
         gameStarted = false;
         jumpFrames = 0;
-        pipeChecker = false;
-        distanceNeededPipeCorrection = 0;
-        spaceBetweenPipes = 640 - heightBottomPipe - heightTopPipe;
+
 
         
         flappyBirdY = 308; 
@@ -104,37 +103,20 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         
     }
 
-    public void pipeOrganizationSmallerThan() {
-        if(spaceBetweenPipes < 150) {
-            pipeChecker = true; 
-            distanceNeededPipeCorrection = 150 - spaceBetweenPipes;
-        }
-
-        while (pipeChecker == true) {
-            spaceBetweenPipes = distanceNeededPipeCorrection;
-        }
-    }
+    
   
 
     public void randomCoordinatesY() {
-        boundsBottomPipe = maxBottomY - minBottomY;
-        updatedBottomValue = minBottomY + randomBottomPipe.nextInt(boundsBottomPipe);
-        // System.out.println(String.format("bbp : %d", updatedBottomValue));
-        // System.out.println(String.format("btp : %d",updatedTopValue));
-        heightBottomPipe = updatedBottomValue;
-        heightTopPipe = 640 - heightBottomPipe - 100;
-        // System.out.println(String.format("heightBottomPipe : %d", heightBottomPipe));
-        // System.out.println(String.format("heightTopPipe : %d", heightTopPipe));
-        System.out.println(String.format("heightTopPipe : %d", heightTopPipe));
-        System.out.println(String.format("heightBottomPipe : %d", heightBottomPipe));
+        int updatedBottomPipe = 75 + rand.nextInt(540);
+        heightBottomPipe = updatedBottomPipe;
+        heightTopPipe = 640 - (heightBottomPipe + 150);
     }
     
     public void animate() {
         while (true) {
             //animation code
-
-            // System.out.println(String.format("Bottom: %d, %d", bottomPipeX, bottomPipeY));
-            // System.out.println(String.format("Top: %d, %d", topPipeX, topPipeY));
+            System.out.println("bottom x:" + bottomPipeX);
+            System.out.println("top x:" + topPipeX);
 
             
             bottomPipeX = bottomPipeX - 6;
@@ -165,7 +147,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
             }
             bottomPipeY = 640 - heightBottomPipe;
             
-            this.pipeOrganizationSmallerThan();
+
 
             repaint();
             
@@ -188,7 +170,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         if (backgroundImage != null) {
             graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
         }
-
+        System.out.println(topPipe);
         if(topPipe != null) {
             Image scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
             graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
