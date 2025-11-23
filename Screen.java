@@ -27,7 +27,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int bottomPipeY;
     int flappyBirdY;
     
-
+    JLabel gameOverPanel;
     
 
     boolean gameStarted;
@@ -36,9 +36,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int heightBottomPipe;
 
 
-    Random rand;
-    int updatedBottomPipe;
-
+    Random rand;    
     
     int minTopY;
     int maxTopY;
@@ -47,8 +45,8 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int boundsTopPipe;
     int boundsBottomPipe;
     int updatedTopValue;
-    int updatedBottomValue;
-  
+    
+    boolean gameOver;
     
     public Screen() {
         //J(everything)
@@ -64,7 +62,9 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         heightTopPipe = 250;
 
         rand = new Random();
-        updatedBottomPipe = 0;
+
+        
+        
         
         gameStarted = false;
         jumpFrames = 0;
@@ -76,6 +76,10 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         topPipeY = 30;
         bottomPipeX = 320;
         bottomPipeY = 390;
+
+        gameOverPanel = new JLabel();
+        gameOverPanel.setBounds(290, 40, 240, 130);
+        
         
         backgroundImage = new ImageIcon("flappybirdbg.png");
         topPipe = new ImageIcon("toppipe.png");
@@ -98,7 +102,7 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         if (event.getKeyCode() == 32) {
             jumpFrames += 2;
             gameStarted = true;
-            this.space();
+            
         } 
         
     }
@@ -107,9 +111,34 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
   
 
     public void randomCoordinatesY() {
-        int updatedBottomPipe = 75 + rand.nextInt(540);
-        heightBottomPipe = updatedBottomPipe;
+        heightBottomPipe = 75 + rand.nextInt(390);
         heightTopPipe = 640 - (heightBottomPipe + 150);
+        scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
+        scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
+    }
+
+    public void activateGameOverPanel() {
+        gameOverPanel.setText(TOOL_TIP_TEXT_KEY);
+    }
+
+    
+
+    private boolean checkCollision() {
+        // heightTopPipe, topPipeX, topPipeY, 40: scaledTopPipe.getWidth()
+        // flappybirdwidth = 34, height = 24
+
+        // check collision for bottom pipe=
+        if (flappyBirdY + 24 > bottomPipeY && flappyBirdY + 24 < bottomPipeY + heightBottomPipe && 134 > bottomPipeX && 134 < bottomPipeX + 40) {
+            return true;
+        }
+        if (flappyBirdY > 0 && flappyBirdY < heightTopPipe && 134 > topPipeX && 134 < topPipeX + 40) {
+            return true;
+        }
+        if (flappyBirdY > 640 || flappyBirdY < 0) {
+            return true;
+        }
+
+        return false;
     }
     
     public void animate() {
@@ -118,7 +147,6 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
             System.out.println("bottom x:" + bottomPipeX);
             System.out.println("top x:" + topPipeX);
 
-            
             bottomPipeX = bottomPipeX - 6;
             topPipeX = topPipeX - 6;
             
@@ -134,7 +162,8 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
             
             if (topPipeX <= -40) {
                 this.randomCoordinatesY();
-                topPipeX = 320;
+                topPipeX = 360;
+                bottomPipeX = 360;
             }
 
             if (topPipeY != 0) {
@@ -142,12 +171,13 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
             }
             
 
-            if (bottomPipeX <= -40) {
-                bottomPipeX = 320;
-            }
             bottomPipeY = 640 - heightBottomPipe;
             
+            this.checkCollision();
 
+            if (checkCollision() == true) {
+                gameOver = true;
+            }
 
             repaint();
             
@@ -167,31 +197,32 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-        if (backgroundImage != null) {
-            graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-        }
-        System.out.println(topPipe);
-        if(topPipe != null) {
-            Image scaledTopPipe = topPipe.getImage().getScaledInstance(40, heightTopPipe, Image.SCALE_SMOOTH);
-            graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
-            // graphics.drawImage(topPipe.getImage(), topPipeX, topPipeY, this);
-            //System.out.println(topPipeX);
-        }
-        if (bottomPipe != null) {
-            Image scaledBottomPipe = topPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
-            graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
-            //System.out.println(bottomPipeX);
-        }
-        if (scaledFlappyBird != null) { 
-            graphics.drawImage(scaledFlappyBird,100, flappyBirdY, this);
+
+        if (!gameOver) {
+            if (backgroundImage != null) {
+                graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+            }
+            System.out.println(topPipe);
+            if(topPipe != null) {
+                graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
+                // graphics.drawImage(topPipe.getImage(), topPipeX, topPipeY, this);
+                //System.out.println(topPipeX);
+            }
+            if (bottomPipe != null) {
+    
+                graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
+                //System.out.println(bottomPipeX);
+            }
+            if (scaledFlappyBird != null) { 
+                graphics.drawImage(scaledFlappyBird, 100, flappyBirdY, this);
+            }
+        } else {
+            // game over screen
+            graphics.drawString("Game Over!", 100, 100);
         }
     }
 
-    public void space() {
-        //flappyBirdY = flappyBirdY - 50;
-        // System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));
-        // System.out.println(String.format("beginning flappyBirdY : %d", flappyBirdY));  
-    }
+    
 
 
     @Override
