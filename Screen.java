@@ -26,8 +26,10 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int bottomPipeX;
     int bottomPipeY;
     int flappyBirdY;
+
+
+    int score;
     
-    JLabel gameOverPanel;
     
 
     boolean gameStarted;
@@ -35,6 +37,8 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     int heightTopPipe;
     int heightBottomPipe;
 
+    JButton start;
+    boolean screenStarted;
 
     Random rand;    
     
@@ -63,24 +67,24 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
 
         rand = new Random();
 
-        
-        
+        score = 0;
         
         gameStarted = false;
         jumpFrames = 0;
 
+        start = new JButton();
+        start.setBounds(100,170,80,15);
+        start.addActionListener(this);
+        add(start);
 
-        
+        screenStarted = false;
+
         flappyBirdY = 308; 
         topPipeX = 320;
         topPipeY = 30;
         bottomPipeX = 320;
         bottomPipeY = 390;
 
-        gameOverPanel = new JLabel();
-        gameOverPanel.setBounds(290, 40, 240, 130);
-        
-        
         backgroundImage = new ImageIcon("flappybirdbg.png");
         topPipe = new ImageIcon("toppipe.png");
         flappyBird = new ImageIcon("flappybird.png");
@@ -117,12 +121,6 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
         scaledBottomPipe = bottomPipe.getImage().getScaledInstance(40, heightBottomPipe, Image.SCALE_SMOOTH);
     }
 
-    public void activateGameOverPanel() {
-        gameOverPanel.setText(TOOL_TIP_TEXT_KEY);
-    }
-
-    
-
     private boolean checkCollision() {
         // heightTopPipe, topPipeX, topPipeY, 40: scaledTopPipe.getWidth()
         // flappybirdwidth = 34, height = 24
@@ -144,15 +142,16 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     public void animate() {
         while (true) {
             //animation code
-            System.out.println("bottom x:" + bottomPipeX);
-            System.out.println("top x:" + topPipeX);
+            // System.out.println("bottom x:" + bottomPipeX);
+            // System.out.println("top x:" + topPipeX);
 
-            bottomPipeX = bottomPipeX - 6;
-            topPipeX = topPipeX - 6;
+           
             
 
             if (gameStarted == true) {
                 flappyBirdY += 7;
+                bottomPipeX = bottomPipeX - 6;
+            topPipeX = topPipeX - 6;
             }
 
             if (jumpFrames > 0) {
@@ -197,37 +196,49 @@ public class Screen extends JPanel implements ActionListener, KeyListener {
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
-
-        if (!gameOver) {
-            if (backgroundImage != null) {
-                graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
-            }
-            System.out.println(topPipe);
-            if(topPipe != null) {
-                graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
-                // graphics.drawImage(topPipe.getImage(), topPipeX, topPipeY, this);
-                //System.out.println(topPipeX);
-            }
-            if (bottomPipe != null) {
+        if (screenStarted == true) {
+            start.setVisible(false);
+            if (!gameOver) {
+                if (backgroundImage != null) {
+                    graphics.drawImage(backgroundImage.getImage(), 0, 0, getWidth(), getHeight(), this);
+                }
+                System.out.println(topPipe);
+                if(topPipe != null) {
+                    graphics.drawImage(scaledTopPipe, topPipeX, topPipeY, this);
+                    // graphics.drawImage(topPipe.getImage(), topPipeX, topPipeY, this);
+                    //System.out.println(topPipeX);
+                }
+                if (bottomPipe != null) {
+        
+                    graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
+                    //System.out.println(bottomPipeX);
+                }
+                if (scaledFlappyBird != null) { 
+                    graphics.drawImage(scaledFlappyBird, 100, flappyBirdY, this);
+                }
+                if (100 == bottomPipeX + 40) {
+                    score += 1;
+                }
+                graphics.drawString(String.valueOf("score:" + score), 305, 60);
     
-                graphics.drawImage(scaledBottomPipe, bottomPipeX, bottomPipeY, this);
-                //System.out.println(bottomPipeX);
+            } else {
+                // game over screen
+                graphics.drawString("    Game Over!", 120,245);
+                graphics.drawString(String.valueOf("score:" + score), 143, 255);
             }
-            if (scaledFlappyBird != null) { 
-                graphics.drawImage(scaledFlappyBird, 100, flappyBirdY, this);
-            }
-        } else {
-            // game over screen
-            graphics.drawString("Game Over!", 100, 100);
+        } 
         }
-    }
+
+        
 
     
 
 
     @Override
     public void actionPerformed(ActionEvent event) {
-
+        if (event.getSource() == start) {
+            screenStarted = true;
+        }
 
     }
 
